@@ -1,0 +1,67 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: Build iOS Release (EAS)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build iOS IPA via EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build \
+            --platform ios \
+            --profile production \
+            --non-interactive \
+            --wait \
+            --json > eas-ios-output.json
+          cat eas-ios-output.json
+
+      - name: Download IPA from EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          BUILD_URL=$(node -e "const j=JSON.parse(require('fs').readFileSync('eas-ios-output.json','utf8')); console.log(j[0]?.artifacts?.buildUrl || '')")
+          if [ -n "$BUILD_URL" ]; then
+            echo "Build URL: $BUILD_URL"
+            curl -L -o url-player-plus.ipa "$BUILD_URL"
+            echo "IPA downloaded: $(du -sh url-player-plus.ipa | cut -f1)"
+          else
+            echo "No build URL found - check EAS dashboard at https://expo.dev"
+          fi
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: url-player-plus-ipa-${{ github.run_number }}
+          path: url-player-plus.ipa
+          retention-days: 30
+          if-no-files-found: warn
