@@ -1,45 +1,33 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { MediaCard } from "@/components/MediaCard";
 import Colors from "@/constants/colors";
 import { MediaItem, usePlayer } from "@/context/PlayerContext";
+import { useLocale } from "@/context/LocaleContext";
 
 export default function FavoritesScreen() {
   const insets = useSafeAreaInsets();
   const { favorites, toggleFavorite } = usePlayer();
+  const { t, isRTL } = useLocale();
+  const tf = t.favorites;
 
   const handlePlay = (item: MediaItem) => {
     router.push({
       pathname: "/player",
-      params: {
-        id: item.id,
-        url: item.url,
-        title: item.title,
-        type: item.type,
-        userAgent: item.userAgent || "",
-      },
+      params: { id: item.id, url: item.url, title: item.title, type: item.type, userAgent: item.userAgent || "" },
     });
   };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Favorites</Text>
-          <Text style={styles.headerSub}>
-            {favorites.length > 0
-              ? `${favorites.length} saved item${favorites.length !== 1 ? "s" : ""}`
-              : "Save your favorite media"}
-          </Text>
+      <View style={[styles.header, isRTL && styles.headerRTL]}>
+        <View style={isRTL ? styles.headerTextRTL : undefined}>
+          <Text style={styles.headerTitle}>{tf.title}</Text>
+          <Text style={styles.headerSub}>{tf.subtitle(favorites.length)}</Text>
         </View>
       </View>
 
@@ -48,10 +36,8 @@ export default function FavoritesScreen() {
           <View style={styles.emptyIcon}>
             <Feather name="heart" size={44} color={Colors.textMuted} />
           </View>
-          <Text style={styles.emptyTitle}>No Favorites</Text>
-          <Text style={styles.emptyDesc}>
-            Tap the heart icon on any media item to save it here
-          </Text>
+          <Text style={styles.emptyTitle}>{tf.empty.title}</Text>
+          <Text style={styles.emptyDesc}>{tf.empty.desc}</Text>
         </View>
       ) : (
         <ScrollView
@@ -66,7 +52,7 @@ export default function FavoritesScreen() {
               item={item}
               onPlay={handlePlay}
               onFavorite={toggleFavorite}
-              showFavoriteButton={true}
+              showFavoriteButton
             />
           ))}
         </ScrollView>
@@ -76,63 +62,16 @@ export default function FavoritesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  headerTitle: {
-    fontFamily: "Inter_700Bold",
-    fontSize: 26,
-    color: Colors.text,
-  },
-  headerSub: {
-    fontFamily: "Inter_400Regular",
-    fontSize: 13,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    paddingBottom: 120,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-  },
-  emptyIcon: {
-    width: 88,
-    height: 88,
-    borderRadius: 22,
-    backgroundColor: Colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  emptyTitle: {
-    fontFamily: "Inter_700Bold",
-    fontSize: 20,
-    color: Colors.text,
-  },
-  emptyDesc: {
-    fontFamily: "Inter_400Regular",
-    fontSize: 14,
-    color: Colors.textSecondary,
-    textAlign: "center",
-    paddingHorizontal: 40,
-  },
+  container: { flex: 1, backgroundColor: Colors.background },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 16 },
+  headerRTL: { flexDirection: "row-reverse" },
+  headerTextRTL: { alignItems: "flex-end" },
+  headerTitle: { fontFamily: "Inter_700Bold", fontSize: 26, color: Colors.text },
+  headerSub: { fontFamily: "Inter_400Regular", fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 4, paddingBottom: 120 },
+  emptyContainer: { flex: 1, alignItems: "center", justifyContent: "center", gap: 12 },
+  emptyIcon: { width: 88, height: 88, borderRadius: 22, backgroundColor: Colors.surface, alignItems: "center", justifyContent: "center", marginBottom: 8 },
+  emptyTitle: { fontFamily: "Inter_700Bold", fontSize: 20, color: Colors.text },
+  emptyDesc: { fontFamily: "Inter_400Regular", fontSize: 14, color: Colors.textSecondary, textAlign: "center", paddingHorizontal: 40 },
 });

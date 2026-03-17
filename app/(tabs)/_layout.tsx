@@ -8,27 +8,30 @@ import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
 import Colors from "@/constants/colors";
+import { useLocale } from "@/context/LocaleContext";
 
 function NativeTabLayout() {
+  const { t } = useLocale();
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
         <Icon sf={{ default: "play.circle", selected: "play.circle.fill" }} />
-        <Label>Player</Label>
+        <Label>{t.tabs.player}</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="history">
         <Icon sf={{ default: "clock", selected: "clock.fill" }} />
-        <Label>History</Label>
+        <Label>{t.tabs.history}</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="favorites">
         <Icon sf={{ default: "heart", selected: "heart.fill" }} />
-        <Label>Favorites</Label>
+        <Label>{t.tabs.favorites}</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
 
 function ClassicTabLayout() {
+  const { t } = useLocale();
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
 
@@ -41,8 +44,7 @@ function ClassicTabLayout() {
         tabBarStyle: {
           position: "absolute",
           backgroundColor: isIOS ? "transparent" : Colors.tabBar,
-          borderTopWidth: 1,
-          borderTopColor: Colors.tabBarBorder,
+          borderTopWidth: 0,
           elevation: 0,
           ...(isWeb ? { height: 84 } : {}),
         },
@@ -70,7 +72,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Player",
+          title: t.tabs.player,
           tabBarIcon: ({ color }) =>
             isIOS ? (
               <SymbolView name="play.circle" tintColor={color} size={24} />
@@ -82,7 +84,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="history"
         options={{
-          title: "History",
+          title: t.tabs.history,
           tabBarIcon: ({ color }) =>
             isIOS ? (
               <SymbolView name="clock" tintColor={color} size={24} />
@@ -94,7 +96,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: "Favorites",
+          title: t.tabs.favorites,
           tabBarIcon: ({ color }) =>
             isIOS ? (
               <SymbolView name="heart" tintColor={color} size={24} />
