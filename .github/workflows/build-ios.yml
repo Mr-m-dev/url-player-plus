@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-ios:
+    if: false
     name: Build iOS Release (EAS)
     runs-on: ubuntu-latest
 
