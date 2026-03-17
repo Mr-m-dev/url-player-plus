@@ -12,6 +12,7 @@ env:
 
 jobs:
   build-android:
+    if: false
     name: Build Android Release
     runs-on: ubuntu-latest
 
