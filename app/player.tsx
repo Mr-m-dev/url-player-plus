@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { Audio, Video, ResizeMode, AVPlaybackStatus } from "expo-av";
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
@@ -479,7 +479,7 @@ export default function PlayerScreen() {
         fileUri,
         { headers },
         (progress) => {
-          const total = progress.totalBytesExpectedToDownload;
+          const total = progress.totalBytesExpectedToWrite;
           const written = progress.totalBytesWritten;
           setDownloadProgress(total > 0 ? written / total : 0);
         }
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
   video: { flex: 1 },
   loadingOverlay: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: "rgba(0,0,0,0.5)" },
   loadingText: { fontFamily: "Inter_400Regular", fontSize: 13, color: Colors.textSecondary },
-  videoControls: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 16, paddingBottom: 20, paddingTop: 60, background: "transparent", gap: 12 },
+  videoControls: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 16, paddingBottom: 20, paddingTop: 60, backgroundColor: "transparent", gap: 12 },
   controlRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 32 },
   ctrlBtn: { alignItems: "center", justifyContent: "center", width: 44, height: 44 },
   skipLabel: { fontFamily: "Inter_600SemiBold", fontSize: 9, color: "#FFF", marginTop: 1 },
